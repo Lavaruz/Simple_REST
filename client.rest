@@ -6,10 +6,24 @@ POST http://localhost:3000/customers
 Content-Type: application/json
 
 {
-    "name": "Lavaruz",
-    "item": "Mouse"
+    "name": "Assami Muzaki",
+    "item":"Deskmat"
 }
 
 ###
 
-GET http://localhost:3000/customers/62fb0606f55ec6cdc0c10f76
+GET http://localhost:3000/customers/62fb1312ed957f9b084bc3f0
+
+###
+
+DELETE http://localhost:3000/customers/62fb1312ed957f9b084bc3f0
+
+###
+
+PATCH http://localhost:3000/customers/62fb1312ed957f9b084bc3f0
+Content-Type: application/json
+
+{
+    "name": "Assami Projoi",
+    "item":"Demot"
+}

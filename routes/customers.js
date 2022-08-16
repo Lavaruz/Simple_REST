@@ -9,39 +9,55 @@ customersRoute.get('/',async(req,res)=>{
         const customer = await Customers.find()
         res.status(200).json(customer)
     }catch(err){
-        res.status(500).json(err)
+        res.status(500).json({message: err.message})
     }
 })
 
 // GET ONE
 customersRoute.get('/:id',getCustomerById, (req,res)=>{
-    res.status(200).json(res.customer)
+    try{
+        res.status(200).json(res.customer)
+    }catch(err){
+        res.status(404).json({message: "no customer found"})
+    }
 })
 
 // POST
-customersRoute.post('/', async(req,res)=>{
+customersRoute.post('/', async (req,res)=>{
     try{
-        await Customers.findOneAndUpdate({
-            name: req.body.name
-        }, req.body, {upsert:true, new: true})
-        res.status(201).json({message: "cutomer created"})
+        const newCustomer = await Customers.create({
+            name: req.body.name,
+            item: req.body.item
+        })
+        res.status(201).json(newCustomer)
     }catch(err){
-        res.send(400).json(err)
+        res.status(400).json({message: err.message})
     }
 })
 
 // UPDATE
-customersRoute.patch('/:id', (req,res)=>{
-    
+customersRoute.patch('/:id',getCustomerById, async(req,res)=>{
+    if(req.body.name != null){
+        res.customer.name = req.body.name
+    }
+    if(req.body.item != null){
+        res.customer.item = req.body.item
+    }
+    try{
+        const updatedCustomer = await res.customer.save()
+        res.json({updatedCustomer})
+    }catch(err){
+        res.json({message: err.message})
+    }
 })
 
 // DELETE
-customersRoute.delete('/:id', async(req,res)=>{
+customersRoute.delete('/:id', getCustomerById, async(req,res)=>{
     try{
-        await Customers.remove(res.customer)
-        res.json({message: "customer deleted"})
+        const customerDelete = await Customers.deleteOne(res.customer)
+        return res.json({customerDelete, message: "customer deleted"})
     }catch(err){
-        res.status(400).json(err)
+        return res.status(400).json({message: err.message})
     }
 })
 
@@ -49,10 +65,12 @@ customersRoute.delete('/:id', async(req,res)=>{
 async function getCustomerById(req,res,next){
     let customer
     try{
-        paramId = req.params.id
-        customer = await Customers.findById(paramId)
+        customer = await Customers.findById(req.params.id)
+        if(customer == null){
+            return res.status(404).json({message: "customer not found"})
+        }
     }catch(err){
-        return res.status(400).json({message: 'no customer found'})
+        return res.status(400).json({message: err.message})
     }
     res.customer = customer
     next()
