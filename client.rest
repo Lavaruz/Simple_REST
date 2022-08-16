@@ -1,0 +1,15 @@
+GET http://localhost:3000/customers
+
+###
+
+POST http://localhost:3000/customers
+Content-Type: application/json
+
+{
+    "name": "Lavaruz",
+    "item": "Mouse"
+}
+
+###
+
+GET http://localhost:3000/customers/62fb0606f55ec6cdc0c10f76
